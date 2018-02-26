@@ -41,6 +41,7 @@ class KDTreeSearchEngine(SmartSearchEngine):
         return bag_of_words.get_words_str()
 
     def _after_publish(self, documents):
+        print documents
         self._tfidf_matrix = self._vectorizer.fit_transform(documents)
         self._kdtree_index = KDTree(self._tfidf_matrix.toarray(), leaf_size=self._leaf_size, metric=self._metric)
 
