@@ -1,6 +1,8 @@
 import ConfigParser
 import numpy as np
 
+import pickle
+
 from sklearn.metrics.pairwise import cosine_similarity
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
@@ -23,7 +25,8 @@ class MLearningSearchEngine(SmartSearchEngine):
         self._service_array = []
         self._index = None
         self._corpus = None
-        self._vectorizer = TfidfVectorizer()
+        self._train_model = False
+        
         self._preprocessor = StringPreprocessor('english.long')
 
     def load_configuration(self, configuration_file):
@@ -34,9 +37,16 @@ class MLearningSearchEngine(SmartSearchEngine):
         intermediate_dim = config.getint('RegistryConfigurations', 'intermediate_dim')
         batch_size = config.getint('RegistryConfigurations', 'batch_size')
         epochs = config.getint('RegistryConfigurations', 'epochs')
-        self._model = VAE(latent_dim, intermediate_dim, 1.0,
+        if config.get('RegistryConfigurations', 'train_model').lower() == 'true':
+            self._train_model = True
+            self._model = VAE(latent_dim, intermediate_dim, 1.0,
                           batch_size, epochs)
-
+            self._vectorizer = TfidfVectorizer()
+        else:
+            self._model = VAE()
+            self._model.load('vae.h5')
+            self._vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
+        
     def unpublish(self, service):
         pass
 
@@ -44,9 +54,14 @@ class MLearningSearchEngine(SmartSearchEngine):
         return bag_of_words.get_words_str()
 
     def _after_publish(self, documents):
-        X = self._vectorizer.fit_transform(documents)
-        X_train, X_test, _, _ = train_test_split(X, np.zeros(X.shape), test_size=0.33)
-        self._model.train(X_train, X_test)
+        if self._train_model:
+            X = self._vectorizer.fit_transform(documents)
+            pickle.dump(self._vectorizer, open('vectorizer.pkl', 'wb'))
+            X_train, X_test, _, _ = train_test_split(X, np.zeros(X.shape), test_size=0.33)
+            self._model.train(X_train, X_test)
+            self._model.save('vae.h5')
+        else:
+            X = self._vectorizer.transform(documents)
         self._index = self._model.transform(X)
 
     def publish(self, service):

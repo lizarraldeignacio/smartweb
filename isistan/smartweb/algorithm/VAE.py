@@ -9,6 +9,7 @@ from keras.models import Model
 from keras import backend as K
 from keras import metrics
 from keras.datasets import mnist
+from keras.models import load_model
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.utils import shuffle
 import os
@@ -59,8 +60,14 @@ class VAE(object):
         # instantiate VAE model
         self._vae = Model(x, x_decoded_mean)
 
+        # Custom objective function (Cosine similarity)
+        def cos_distance(y_true, y_pred):
+            y_true = K.l2_normalize(y_true, axis=-1)
+            y_pred = K.l2_normalize(y_pred, axis=-1)
+            return K.mean(1 - K.sum((y_true * y_pred), axis=-1))
+
         # Compute VAE loss
-        xent_loss = original_dim * metrics.binary_crossentropy(x, x_decoded_mean)
+        xent_loss = original_dim * cos_distance(x, x_decoded_mean)
         kl_loss = - 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=-1)
         vae_loss = K.mean(xent_loss + kl_loss)
 
@@ -79,3 +86,9 @@ class VAE(object):
 
     def transform(self, X):
         return self._encoder.predict(X)
+
+    def save(self, path):
+        self._encoder.save(path)
+
+    def load(self, path):
+        self._encoder = load_model(path)
