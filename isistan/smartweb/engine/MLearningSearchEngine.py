@@ -11,6 +11,7 @@ from isistan.smartweb.algorithm.VAE import VAE
 
 from isistan.smartweb.core.SearchEngine import SmartSearchEngine
 from isistan.smartweb.preprocess.StringPreprocessor import StringPreprocessor
+from isistan.smartweb.preprocess.StringPreprocessorAdapter import StringPreprocessorAdapter
 from isistan.smartweb.preprocess.StringTransformer import StringTransformer
 
 __author__ = 'ignacio'
@@ -26,8 +27,6 @@ class MLearningSearchEngine(SmartSearchEngine):
         self._index = None
         self._corpus = None
         self._train_model = False
-        
-        self._preprocessor = StringPreprocessor('english.long')
 
     def load_configuration(self, configuration_file):
         super(MLearningSearchEngine, self).load_configuration(configuration_file)
@@ -41,7 +40,8 @@ class MLearningSearchEngine(SmartSearchEngine):
             self._train_model = True
             self._model = VAE(latent_dim, intermediate_dim, 1.0,
                           batch_size, epochs)
-            self._vectorizer = TfidfVectorizer(norm='l2')
+            self._vectorizer = TfidfVectorizer(norm='l2', 
+                                               preprocessor=StringPreprocessorAdapter('english.long'))
         else:
             self._model = VAE()
             self._model.load('vae.h5')
