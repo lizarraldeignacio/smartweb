@@ -41,7 +41,7 @@ class MLearningSearchEngine(SmartSearchEngine):
             self._train_model = True
             self._model = VAE(latent_dim, intermediate_dim, 1.0,
                           batch_size, epochs)
-            self._vectorizer = TfidfVectorizer()
+            self._vectorizer = TfidfVectorizer(norm='l2')
         else:
             self._model = VAE()
             self._model.load('vae.h5')

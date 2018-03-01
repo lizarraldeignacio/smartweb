@@ -72,7 +72,7 @@ class VAE(object):
         vae_loss = K.mean(xent_loss + kl_loss)
 
         self._vae.add_loss(vae_loss)
-        self._vae.compile(optimizer='rmsprop')
+        self._vae.compile(optimizer='Adam')
         self._vae.summary()
 
         self._vae.fit(x_train,
