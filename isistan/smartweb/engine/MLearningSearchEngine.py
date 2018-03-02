@@ -36,10 +36,11 @@ class MLearningSearchEngine(SmartSearchEngine):
         intermediate_dim = config.getint('RegistryConfigurations', 'intermediate_dim')
         batch_size = config.getint('RegistryConfigurations', 'batch_size')
         epochs = config.getint('RegistryConfigurations', 'epochs')
+        learning_rate = config.getfloat('RegistryConfigurations', 'learning_rate')
         if config.get('RegistryConfigurations', 'train_model').lower() == 'true':
             self._train_model = True
             self._model = VAE(latent_dim, intermediate_dim, 1.0,
-                          batch_size, epochs)
+                          batch_size, epochs, learning_rate)
             self._vectorizer = TfidfVectorizer(norm='l2', 
                                                preprocessor=StringPreprocessorAdapter('english.long'))
         else:

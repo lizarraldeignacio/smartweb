@@ -6,6 +6,7 @@ from scipy.stats import norm
 
 from keras.layers import Input, Dense, Lambda
 from keras.models import Model
+from keras import optimizers
 from keras import backend as K
 from keras import metrics
 from keras.datasets import mnist
@@ -26,12 +27,13 @@ class VAE(object):
     # https://arxiv.org/abs/1312.6114
 
     def __init__(self, latent_dim = 256, intermediate_dim = 512, epsilon_std = 1.0,
-                 batch_size = 100, epochs = 50):
+                 batch_size = 100, epochs = 50, learning_rate = 0.001):
         self._batch_size = batch_size
         self._latent_dim = latent_dim
         self._intermediate_dim = intermediate_dim
         self._epochs = epochs
         self._epsilon_std = epsilon_std
+        self._learning_rate = learning_rate
 
     def train(self, x_train, x_test):
         original_dim = x_train.shape[1] #Mirar
@@ -72,7 +74,7 @@ class VAE(object):
         vae_loss = K.mean(xent_loss + kl_loss)
 
         self._vae.add_loss(vae_loss)
-        self._vae.compile(optimizer='Adam')
+        self._vae.compile(optimizer=optimizers.Adam(lr=self._learning_rate))
         self._vae.summary()
 
         self._vae.fit(x_train,
