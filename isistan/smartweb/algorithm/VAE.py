@@ -2,6 +2,9 @@
 from __future__ import print_function
 
 import numpy as np
+import os
+import tensorflow as tf
+import random as rn
 from scipy.stats import norm
 
 from keras.layers import Input, Dense, Lambda
@@ -13,7 +16,6 @@ from keras.datasets import mnist
 from keras.models import load_model
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.utils import shuffle
-import os
 
 __author__ = 'ignacio'
 
@@ -27,13 +29,48 @@ class VAE(object):
     # https://arxiv.org/abs/1312.6114
 
     def __init__(self, latent_dim = 256, intermediate_dim = 512, epsilon_std = 1.0,
-                 batch_size = 100, epochs = 50, learning_rate = 0.001):
+                 batch_size = 100, epochs = 50, learning_rate = 0.001, reproducible= False):
         self._batch_size = batch_size
         self._latent_dim = latent_dim
         self._intermediate_dim = intermediate_dim
         self._epochs = epochs
         self._epsilon_std = epsilon_std
         self._learning_rate = learning_rate
+
+        if reproducible:
+            # The below is necessary in Python 3.2.3 onwards to
+            # have reproducible behavior for certain hash-based operations.
+            # See these references for further details:
+            # https://docs.python.org/3.4/using/cmdline.html#envvar-PYTHONHASHSEED
+            # https://github.com/keras-team/keras/issues/2280#issuecomment-306959926
+
+            os.environ['PYTHONHASHSEED'] = '0'
+
+            # The below is necessary for starting Numpy generated random numbers
+            # in a well-defined initial state.
+
+            np.random.seed(23)
+
+            # The below is necessary for starting core Python generated random numbers
+            # in a well-defined state.
+
+            rn.seed(23)
+
+            # Force TensorFlow to use single thread.
+            # Multiple threads are a potential source of
+            # non-reproducible results.
+            # For further details, see: https://stackoverflow.com/questions/42022950/which-seeds-have-to-be-set-where-to-realize-100-reproducibility-of-training-res
+
+            session_conf = tf.ConfigProto(intra_op_parallelism_threads=1, inter_op_parallelism_threads=1)
+
+            # The below tf.set_random_seed() will make random number generation
+            # in the TensorFlow backend have a well-defined initial state.
+            # For further details, see: https://www.tensorflow.org/api_docs/python/tf/set_random_seed
+
+            tf.set_random_seed(23)
+
+            sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
+            K.set_session(sess)
 
     def train(self, x_train, x_test):
         original_dim = x_train.shape[1] #Mirar

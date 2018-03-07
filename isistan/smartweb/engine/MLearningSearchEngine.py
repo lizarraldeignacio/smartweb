@@ -39,8 +39,12 @@ class MLearningSearchEngine(SmartSearchEngine):
         learning_rate = config.getfloat('RegistryConfigurations', 'learning_rate')
         if config.get('RegistryConfigurations', 'train_model').lower() == 'true':
             self._train_model = True
-            self._model = VAE(latent_dim, intermediate_dim, 1.0,
-                          batch_size, epochs, learning_rate)
+            if config.get('RegistryConfigurations', 'reproducible').lower() == 'true':
+                self._model = VAE(latent_dim, intermediate_dim, 1.0,
+                            batch_size, epochs, learning_rate, reproducible = True)
+            else:
+                self._model = VAE(latent_dim, intermediate_dim, 1.0,
+                            batch_size, epochs, learning_rate)
             self._vectorizer = TfidfVectorizer(norm='l2', 
                                                preprocessor=StringPreprocessorAdapter('english.long'))
         else:
@@ -58,7 +62,7 @@ class MLearningSearchEngine(SmartSearchEngine):
         if self._train_model:
             X = self._vectorizer.fit_transform(documents)
             pickle.dump(self._vectorizer, open('vectorizer.pkl', 'wb'))
-            X_train, X_test, _, _ = train_test_split(X, np.zeros(X.shape), test_size=0.33)
+            X_train, X_test, _, _ = train_test_split(X, np.zeros(X.shape), test_size=0.33, random_state=23)
             self._model.train(X_train, X_test)
             self._model.save('vae.h5')
         else:
