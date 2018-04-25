@@ -13,6 +13,7 @@ from isistan.smartweb.preprocess.WordNetTransformer import WordNetTransformer
 from isistan.smartweb.preprocess.DimensionalityTransformer import DimensionalityTransformer
 from isistan.smartweb.preprocess.CombineTransformer import CombineTransformer
 from isistan.smartweb.core.FreebaseInformationSource import FreebaseInformationSource
+from isistan.smartweb.core.DBpediaInformationSource import DBpediaInformationSource
 from isistan.smartweb.core.BabelInformationSource import BabelInformationSource
 from isistan.smartweb.core.StandfordNER import StandfordNER
 
@@ -135,8 +136,10 @@ class SmartSearchEngine(SearchEngine):
             kdb_source_opt = config.get('RegistryConfigurations', 'kdb_source').lower()
             if kdb_source_opt == 'freebase':
                 knowledge_source = FreebaseInformationSource(kdb_api_key)
-            else:
+            elif kdb_source_opt == 'babelnet':
                 knowledge_source = BabelInformationSource(kdb_api_key)
+            else:
+                knowledge_source = DBpediaInformationSource()
             self._document_transformer = NERTransformer(knowledge_source, standford_ner)
             self._document_expansion = True
 
