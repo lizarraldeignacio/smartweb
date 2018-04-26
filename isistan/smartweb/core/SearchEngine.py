@@ -8,6 +8,7 @@ from isistan.smartweb.preprocess.DummyTransformer import DummyTransformer
 from isistan.smartweb.preprocess.WADLTransformer import WADLTransformer
 from isistan.smartweb.preprocess.WSDLTransformer import WSDLTransformer
 from isistan.smartweb.preprocess.WSDLSimpleTransformer import WSDLSimpleTransformer
+from isistan.smartweb.preprocess.PlainTextTransformer import PlainTextTransformer
 from isistan.smartweb.preprocess.NERTransformer import NERTransformer
 from isistan.smartweb.preprocess.WordNetTransformer import WordNetTransformer
 from isistan.smartweb.preprocess.DimensionalityTransformer import DimensionalityTransformer
@@ -78,8 +79,9 @@ class SmartSearchEngine(SearchEngine):
                 return WSDLTransformer()
             elif self._use_wordnet:
                 return WSDLSimpleTransformer()
-        print 'Invalid document dataset'
-        return None
+            else:
+                return PlainTextTransformer()
+        print 'Dataset: Invalid document format'
 
     @abc.abstractmethod
     def _after_publish(self, documents):

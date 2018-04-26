@@ -1,5 +1,3 @@
-import sys
-import os.path
 import csv
 
 __author__ = 'ignacio'
