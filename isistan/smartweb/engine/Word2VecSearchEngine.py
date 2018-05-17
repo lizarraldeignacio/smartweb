@@ -31,6 +31,9 @@ class Word2VecSearchEngine(SmartSearchEngine):
         config.read(configuration_file)
 
         self._precomputed_vectors_path = config.get('RegistryConfigurations', 'precomputed_vectors_path')
+        self._binary_format = False
+        if config.get('RegistryConfigurations', 'word2vec_binary_format').lower() == 'true':
+            self._binary_format = True
 
     def unpublish(self, service):
         pass
@@ -41,7 +44,7 @@ class Word2VecSearchEngine(SmartSearchEngine):
 
     def _after_publish(self, documents):
         print "Loading Model..."
-        self._word2vec_model = models.KeyedVectors.load_word2vec_format(self._precomputed_vectors_path, binary=False)
+        self._word2vec_model = models.KeyedVectors.load_word2vec_format(self._precomputed_vectors_path, binary=self._binary_format)
         self._word2vec_model.init_sims(replace=True)
         print "[OK]"
         for document, service in zip(documents, self._service_array):
