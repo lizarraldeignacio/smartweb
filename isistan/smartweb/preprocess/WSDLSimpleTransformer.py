@@ -41,13 +41,13 @@ class WSDLSimpleTransformer(Transformer):
     WSDL_ATTRIBUTE_BINDING = 'binding'
 
     def __init__(self):
-        super(WSDLTransformer, self).__init__()
+        super(WSDLSimpleTransformer, self).__init__()
         self._reader = XMLReader()
 
     def _process_service(self):
         terms = []
         service = self._reader.get_elements([self.WSDL_TAG_SERVICE])[0]
-        service_name_list = WSDLTransformer._process_name(service, self.WSDL_ATTRIBUTE_NAME)
+        service_name_list = WSDLSimpleTransformer._process_name(service, self.WSDL_ATTRIBUTE_NAME)
         if service_name_list is not None:
             terms.extend(service_name_list)
         port_type_list = self._reader.get_elements([self.WSDL_TAG_PORT_TYPE])
@@ -61,7 +61,7 @@ class WSDLSimpleTransformer(Transformer):
                 operation_list = self._reader.get_elements_from(port_type, [self.WSDL_TAG_OPERATION])
                 if operation_list is not None:
                     for operation in operation_list:
-                        terms.extend(WSDLTransformer._process_name(operation, self.WSDL_ATTRIBUTE_NAME))
+                        terms.extend(WSDLSimpleTransformer._process_name(operation, self.WSDL_ATTRIBUTE_NAME))
         return terms
 
     @staticmethod
