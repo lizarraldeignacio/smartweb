@@ -27,6 +27,7 @@ class SemanticSearchEngine(SmartSearchEngine):
         self._index = None
         self._preprocessor = StringPreprocessor('english.long')
         self._number_of_topics = 200
+        self._train_model = False
 
     def load_configuration(self, configuration_file):
         super(SemanticSearchEngine, self).load_configuration(configuration_file)
@@ -36,10 +37,21 @@ class SemanticSearchEngine(SmartSearchEngine):
 
         self._number_of_topics = config.getint('RegistryConfigurations', 'number_of_topics')
         algorithm = config.get('RegistryConfigurations', 'algorithm')
-        if algorithm == 'LDA':
-            self._model_factory = LDAModelFactory()
-        elif algorithm == 'LSA':
-            self._model_factory = LSAModelFactory()
+
+        if config.get('RegistryConfigurations', 'train_model').lower() == 'true':
+            self._train_model = True
+            if algorithm == 'LDA':
+                self._model_factory = LDAModelFactory()
+            elif algorithm == 'LSA':
+                self._model_factory = LSAModelFactory()
+        else:
+            self._tfidf_model = models.TfidfModel.load('vectorizer-semantic.pkl')
+            self._index = similarities.MatrixSimilarity.load('semantic-similarity-mat.pkl')
+            self._model.load('vae.h5')
+            if algorithm == 'LDA':
+                self._model = LDAModelFactory().load('semantic-model.pkl')
+            elif algorithm == 'LSA':
+                self._model = LSAModelFactory().load('semantic-model.pkl')
 
     def unpublish(self, service):
         pass
@@ -49,14 +61,18 @@ class SemanticSearchEngine(SmartSearchEngine):
         return self._preprocessor(words)
 
     def _after_publish(self, documents):
-        self._dictionary = corpora.Dictionary(documents)
-        self._corpus = [self._dictionary.doc2bow(document) for document in documents]
-        self._tfidf_model = models.TfidfModel(self._corpus)
-        self._tfidf_corpus = self._tfidf_model[self._corpus]
-        self._model = self._model_factory.create(self._tfidf_corpus,
-                                                 self._dictionary,
-                                                 self._number_of_topics)
-        self._index = similarities.MatrixSimilarity(self._model[self._corpus])
+        if self._train_model:
+            self._dictionary = corpora.Dictionary(documents)
+            self._corpus = [self._dictionary.doc2bow(document) for document in documents]
+            self._tfidf_model = models.TfidfModel(self._corpus)
+            self._tfidf_corpus = self._tfidf_model[self._corpus]
+            self._model = self._model_factory.create(self._tfidf_corpus,
+                                                    self._dictionary,
+                                                    self._number_of_topics)
+            self._index = similarities.MatrixSimilarity(self._model[self._corpus])
+            self._index.save('semantic-similarity-mat.pkl')
+            self._tfidf_model.save('vectorizer-semantic.pkl')
+            self._model.save('semantic-model.pkl')
 
     def publish(self, service):
         pass

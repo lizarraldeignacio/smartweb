@@ -11,3 +11,9 @@ class LDAModelFactory(ModelFactory):
     def create(self, corpus, dictionary, number_of_topics):
         return LdaModel(corpus, id2word=dictionary,
                         num_topics=number_of_topics)
+
+    def load(self, path):
+        return LdaModel.load(path)
+
+    
+        

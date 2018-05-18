@@ -11,3 +11,6 @@ class LSAModelFactory(ModelFactory):
     def create(self, corpus, dictionary, number_of_topics):
         return LsiModel(corpus, id2word=dictionary,
                         num_topics=number_of_topics)
+    
+    def load(self, path):
+        return LsiModel.load(path)
