@@ -15,9 +15,9 @@ class DBpediaInformationSource(InformationSource):
 
     _NUMBER_OF_RETRIES = 10
     _NUMBER_OF_SENTENCES = 3
-    _SEARCH_SERVICE_URL = 'http://lookup.dbpedia.org/api/search/KeywordSearch'
 
-    def __init__(self):
+    def __init__(self, base_url = 'http://lookup.dbpedia.org/api/search/KeywordSearch'):
+        self._SEARCH_SERVICE_URL = base_url
         self._cache = {}
 
     def _query_dbpedia(self, query):
@@ -34,9 +34,6 @@ class DBpediaInformationSource(InformationSource):
                     retry = False
                     response = json.loads(HttpUtils.http_request(search_url, headers=[('Accept', 'application/json')]))
                     if len(response) > 0:
-                        print 'Query: ' + query
-                        print 'Response:'
-                        print json.dumps(response)
                         if len(response['results']) > 0:
                             result = response['results'][0]
                             self._cache[query] = result['description']
@@ -53,13 +50,10 @@ class DBpediaInformationSource(InformationSource):
         description = self._query_dbpedia(query)
         if description is not None:
             sentences = description.split('.')
-            print 'found information for query: ' + query
             for i in range(0, min(len(sentences), self._NUMBER_OF_SENTENCES)):
                 transformer = StringTransformer()
                 additional_sentence = transformer.transform(sentences[i]).get_words_list()
                 additional_words.extend(additional_sentence)
-        else:
-            print 'information not found for query: ' + query
 
         return additional_words
 
