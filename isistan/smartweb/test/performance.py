@@ -8,7 +8,14 @@ from isistan.smartweb.preprocess.NERTransformer import NERTransformer
 from isistan.smartweb.core.DBpediaInformationSource import DBpediaInformationSource
 from isistan.smartweb.core.StandfordNER import StandfordNER
 
+from gensim import corpora, models, similarities
 
+def _after_publish(documents):
+    _dictionary = corpora.Dictionary(documents)
+    _corpus = [_dictionary.doc2bow(document) for document in documents]
+    _tfidf_model = models.TfidfModel(_corpus)
+    _tfidf_corpus = _tfidf_model[_corpus]
+    _index = similarities.MatrixSimilarity(_tfidf_corpus)
 
 def _create_document_transformer(document_list):
         if len(document_list) > 0:
@@ -38,6 +45,7 @@ def timeit_indexing_NER(service_list):
             bag_of_words = document_transformer.transform(transformer.transform(document))
             documents.append(_preprocess(bag_of_words))
             current_document += 1
+        _after_publish(documents)
 
 def timeit_indexing(service_list):
     transformer = _create_document_transformer(service_list)
@@ -48,3 +56,4 @@ def timeit_indexing(service_list):
         bag_of_words = transformer.transform(document)
         documents.append(_preprocess(bag_of_words))
         current_document += 1
+    _after_publish(documents)
