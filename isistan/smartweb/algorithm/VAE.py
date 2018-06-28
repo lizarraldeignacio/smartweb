@@ -72,7 +72,7 @@ class VAE(object):
             sess = tf.Session(graph=tf.get_default_graph(), config=session_conf)
             K.set_session(sess)
 
-    def train(self, x_train, x_test):
+    def train(self, x_train, x_test, distance):
         original_dim = x_train.shape[1] #Mirar
 
         x = Input(shape=(original_dim,))
@@ -99,14 +99,8 @@ class VAE(object):
         # instantiate VAE model
         self._vae = Model(x, x_decoded_mean)
 
-        # Custom objective function (Cosine similarity)
-        def cos_distance(y_true, y_pred):
-            y_true = K.l2_normalize(y_true, axis=-1)
-            y_pred = K.l2_normalize(y_pred, axis=-1)
-            return K.mean(1 - K.sum((y_true * y_pred), axis=-1))
-
         # Compute VAE loss
-        xent_loss = original_dim * cos_distance(x, x_decoded_mean)
+        xent_loss = original_dim * distance(x, x_decoded_mean)
         kl_loss = - 0.5 * K.sum(1 + z_log_var - K.square(z_mean) - K.exp(z_log_var), axis=-1)
         vae_loss = K.mean(xent_loss + kl_loss)
 

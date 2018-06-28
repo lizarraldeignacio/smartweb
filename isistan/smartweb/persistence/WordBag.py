@@ -22,7 +22,7 @@ class WordBag(object):
             try:
                 words = csv.reader(words_file).next()
             except StopIteration:
-                words = ''
+                words = ['']
         return WordBag(words)
 
     def save_to_file(self, filepath):
