@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split
 from keras import backend as K
 
 
-from isistan.smartweb.algorithm.VAE import VAE
+from isistan.smartweb.algorithm.VAEWasserstein import VAEWasserstein
 from isistan.smartweb.core.SearchEngine import SmartSearchEngine
 from isistan.smartweb.preprocess.StringPreprocessor import StringPreprocessor
 from isistan.smartweb.preprocess.StringPreprocessorAdapter import StringPreprocessorAdapter
@@ -42,15 +42,15 @@ class MLearningSearchEngine(SmartSearchEngine):
         if config.get('RegistryConfigurations', 'train_model').lower() == 'true':
             self._train_model = True
             if config.get('RegistryConfigurations', 'reproducible').lower() == 'true':
-                self._model = VAE(latent_dim, intermediate_dim, epsilon_std,
+                self._model = VAEWasserstein(latent_dim, intermediate_dim, epsilon_std,
                             batch_size, epochs, learning_rate, reproducible = True)
             else:
-                self._model = VAE(latent_dim, intermediate_dim, epsilon_std,
+                self._model = VAEWasserstein(latent_dim, intermediate_dim, epsilon_std,
                             batch_size, epochs, learning_rate)
             self._vectorizer = TfidfVectorizer(norm='l2', 
                                                preprocessor=StringPreprocessorAdapter('english.long'))
         else:
-            self._model = VAE()
+            self._model = VAEWasserstein()
             self._model.load('vae.h5')
             self._vectorizer = pickle.load(open('vectorizer.pkl', 'rb'))
         
