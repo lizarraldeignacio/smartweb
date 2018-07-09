@@ -4,11 +4,9 @@ import abc
 __author__ = 'ignacio'
 
 
-class SmartSearchEngine(object):
+class SmartSearchEngine(object, metaclass=abc.ABCMeta):
     #
     # Search engine abstract class
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def publish(self, service):

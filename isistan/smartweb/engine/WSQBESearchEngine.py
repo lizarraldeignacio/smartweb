@@ -1,5 +1,3 @@
-import ConfigParser
-
 from gensim import corpora, models, similarities
 
 from isistan.smartweb.core.SearchEngine import SmartSearchEngine

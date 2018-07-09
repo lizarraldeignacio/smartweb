@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 
 from sklearn.neighbors import KDTree
 
@@ -23,7 +23,7 @@ class KDTreeSearchEngine(SmartSearchEngine):
     def load_configuration(self, configuration_file):
         super(KDTreeSearchEngine, self).load_configuration(configuration_file)
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
         
         self._metric = config.get('RegistryConfigurations', 'metric').lower()
@@ -41,7 +41,6 @@ class KDTreeSearchEngine(SmartSearchEngine):
         return bag_of_words.get_words_str()
 
     def _after_publish(self, documents):
-        print documents
         self._tfidf_matrix = self._vectorizer.fit_transform(documents)
         self._kdtree_index = KDTree(self._tfidf_matrix.toarray(), leaf_size=self._leaf_size, metric=self._metric)
 

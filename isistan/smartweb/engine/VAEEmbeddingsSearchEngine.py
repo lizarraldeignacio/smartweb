@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 import numpy as np
 
 import pickle
@@ -8,7 +8,6 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
 from gensim.corpora import Dictionary
 from gensim import models, similarities
-from sets import Set
 
 
 from isistan.smartweb.algorithm.VAEWasserstein import VAEWasserstein
@@ -36,7 +35,7 @@ class VAEEmbeddingsSearchEngine(SmartSearchEngine):
 
     def load_configuration(self, configuration_file):
         super(VAEEmbeddingsSearchEngine, self).load_configuration(configuration_file)
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
         latent_dim = config.getint('RegistryConfigurations', 'latent_dim')
         intermediate_dim = config.getint('RegistryConfigurations', 'intermediate_dim')
@@ -91,7 +90,7 @@ class VAEEmbeddingsSearchEngine(SmartSearchEngine):
             return pickle.load(f)
 
     def _create_filter_vocab(self, documents, vocab):
-        filter_set = Set()
+        filter_set = set()
         for document in documents:
             for word in document:
                 if word not in vocab:
@@ -103,7 +102,7 @@ class VAEEmbeddingsSearchEngine(SmartSearchEngine):
             filter_set = None
             if self._load_wmd:
                 filter_set = self._load_obj('word_filter')
-                documents = [filter(lambda x: x not in filter_set, document) for document in documents]
+                documents = [[x for x in document if x not in filter_set] for document in documents]
                 self._vectorizer = Dictionary(documents)
                 distance = WMDDistance.load('models/distances.npy', self._vectorizer)
             else:
@@ -111,18 +110,20 @@ class VAEEmbeddingsSearchEngine(SmartSearchEngine):
                 self._word2vec_model.init_sims(replace=True)
                 filter_set = self._create_filter_vocab(documents, self._word2vec_model.vocab)
                 self._save_obj(filter_set, 'word_filter')
-                documents = [filter(lambda x: x not in filter_set, document) for document in documents]
+                documents = [[x for x in document if x not in filter_set] for document in documents]
                 self._vectorizer = Dictionary(documents)
                 distance = WMDDistance(self._vectorizer, self._word2vec_model)    
                 distance.save('models/distances')
             X = self._corpus_to_nbow(documents)
             self._vectorizer.save(open('models/vectorizer.npy', 'wb'))
             X_train, X_test, _, _ = train_test_split(X, np.zeros(X.shape), test_size=0.33, random_state=23)
+            print(X_train)
+            print(X_test)
             self._model.train(X_train, X_test, distance.get_distances())
             self._model.save('models/vae.h5')
         else:
             filter_set = self._load_obj('word_filter')
-            documents = [filter(lambda x: x not in filter_set, document) for document in documents]
+            documents = [[x for x in document if x not in filter_set] for document in documents]
             X = self._corpus_to_nbow(documents)
         self._index = self._model.transform(X)
 

@@ -1,8 +1,8 @@
-import urllib
-import urllib2
-import httplib
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
+import http.client
 import json
-from InformationSource import InformationSource
+from .InformationSource import InformationSource
 from isistan.smartweb.preprocess.StringTransformer import StringTransformer
 from isistan.smartweb.util.HttpUtils import HttpUtils
 
@@ -27,37 +27,37 @@ class BabelInformationSource(InformationSource):
         n_retries = 0
         retry = True
         if query in self._cache:
-            print 'found information for query: ' + query
+            print('found information for query: ' + query)
             return self._cache[query]
         params = {
                 'word': query,
                 'langs': 'EN',
                 'key': self._api_key
         }
-        search_url = self._SEARCH_SERVICE_URL + '?' + urllib.urlencode(params)
+        search_url = self._SEARCH_SERVICE_URL + '?' + urllib.parse.urlencode(params)
         while retry and n_retries < self._NUMBER_OF_RETRIES:
             try:
                 retry = False
                 response = json.loads(HttpUtils.http_request(search_url))
                 if len(response) > 0:
-                    print 'Response:'
-                    print json.dumps(response)
+                    print('Response:')
+                    print(json.dumps(response))
                     for elem in response:
                         if elem['pos'] == 'NOUN':
                             if elem['id'] in self._cache:
-                                print 'found information for query: ' + query
+                                print('found information for query: ' + query)
                                 return self._cache[elem['id']]
                             params = {
                                 'id': elem['id'],
                                 'key': self._api_key
                             }
-                            synset_url = self._TOPIC_SERVICE_URL + '?' + urllib.urlencode(params)
+                            synset_url = self._TOPIC_SERVICE_URL + '?' + urllib.parse.urlencode(params)
                             synset = json.loads(HttpUtils.http_request(synset_url))
                             self._cache[query] = synset
                             self._cache[elem['id']] = synset
                             return synset
-            except (urllib2.HTTPError, httplib.BadStatusLine, urllib2.URLError):
-                print 'retry'
+            except (urllib.error.HTTPError, http.client.BadStatusLine, urllib.error.URLError):
+                print('retry')
                 retry = True
                 n_retries += 1
 
@@ -69,22 +69,22 @@ class BabelInformationSource(InformationSource):
                 if len(synset['glosses']) > 0:
                     if 'gloss' in synset['glosses'][0]:
                         sentences = synset['glosses'][0]['gloss'].split('.')
-                        print 'Description Result:'
-                        print sentences
+                        print('Description Result:')
+                        print(sentences)
                         if sentences is not None:
-                            print 'found information for query: ' + query
+                            print('found information for query: ' + query)
                             for i in range(0, min(len(sentences), self._NUMBER_OF_SENTENCES)):
                                 transformer = StringTransformer()
                                 additional_sentence = transformer.transform(sentences[i]).get_words_list()
                                 additional_words.extend(additional_sentence)
                         else:
-                            print 'information not found for query: ' + query
+                            print('information not found for query: ' + query)
                     else:
-                        print 'information not found for query: ' + query
+                        print('information not found for query: ' + query)
                 else:
-                    print 'information not found for query: ' + query
+                    print('information not found for query: ' + query)
             else:
-                print 'information not found for query: ' + query
+                print('information not found for query: ' + query)
         return additional_words
 
     def get_type(self, query):

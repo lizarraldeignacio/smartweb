@@ -18,9 +18,9 @@ class WordBag(object):
 
     @staticmethod
     def load_from_file(filepath):
-        with open(filepath, 'rb') as words_file:
+        with open(filepath, 'rt') as words_file:
             try:
-                words = csv.reader(words_file).next()
+                words = next(csv.reader(words_file))
             except StopIteration:
                 words = ['']
         return WordBag(words)

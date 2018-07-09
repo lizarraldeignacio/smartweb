@@ -1,6 +1,6 @@
 import os
 import sys
-import ConfigParser
+import configparser
 import lucene
 
 from gensim import corpora, models, similarities
@@ -37,7 +37,7 @@ class BM25SearchEngine(SearchEngine):
         self._preprocessor = StringPreprocessor()
 
     def load_configuration(self, configuration_file):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
 
         if str(config.get('RegistryConfigurations', 'document_expansion')).lower() == 'true':

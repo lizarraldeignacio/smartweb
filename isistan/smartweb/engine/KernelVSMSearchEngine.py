@@ -1,4 +1,3 @@
-import ConfigParser
 import numpy as np
 
 from gensim import corpora, models, similarities

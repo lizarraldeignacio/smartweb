@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 
 from sklearn.cluster import KMeans
 from sklearn.neighbors import NearestNeighbors
@@ -28,7 +28,7 @@ class GaussianMixtureSearchEngine(SmartSearchEngine):
     def load_configuration(self, configuration_file):
         super(GaussianMixtureSearchEngine, self).load_configuration(configuration_file)
 
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
         
         self._n_components = config.getint('RegistryConfigurations', 'n_components')
@@ -55,9 +55,9 @@ class GaussianMixtureSearchEngine(SmartSearchEngine):
                 self._document_cluster[labels_[i]] = []
             self._document_cluster[labels_[i]].append((document, i))
             i += 1
-        print 'Number of clusters: ' + str(len(self._document_cluster))
+        print(('Number of clusters: ' + str(len(self._document_cluster))))
         for label in self._document_cluster:
-            print 'Label elements: ' + str(len(self._document_cluster[label]))
+            print(('Label elements: ' + str(len(self._document_cluster[label]))))
         for label in self._document_cluster:
             self._cluster[label] = NearestNeighbors(len(self._document_cluster[label]), algorithm='brute', metric='euclidean')
             tfidf_matrix = self._vectorizer.transform(doc[0] for doc in self._document_cluster[label])

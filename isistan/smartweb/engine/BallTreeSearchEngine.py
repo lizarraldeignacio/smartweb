@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 
 from sklearn.neighbors import BallTree
 
@@ -23,7 +23,7 @@ class BallTreeSearchEngine(SmartSearchEngine):
     def load_configuration(self, configuration_file):
         super(BallTreeSearchEngine, self).load_configuration(configuration_file)
         
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
         
         self._metric = config.get('RegistryConfigurations', 'metric').lower()

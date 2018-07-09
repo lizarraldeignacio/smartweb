@@ -1,4 +1,4 @@
-from Transformer import Transformer
+from .Transformer import Transformer
 
 from nltk.corpus import wordnet
 

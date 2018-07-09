@@ -1,9 +1,9 @@
-import ConfigParser
+import configparser
 
 from gensim import corpora, models, similarities
 
-from LSAModelFactory import LSAModelFactory
-from LDAModelFactory import LDAModelFactory
+from .LSAModelFactory import LSAModelFactory
+from .LDAModelFactory import LDAModelFactory
 from isistan.smartweb.core.SearchEngine import SmartSearchEngine
 from isistan.smartweb.preprocess.StringPreprocessor import StringPreprocessor
 from isistan.smartweb.preprocess.StringTransformer import StringTransformer
@@ -32,7 +32,7 @@ class SemanticSearchEngine(SmartSearchEngine):
     def load_configuration(self, configuration_file):
         super(SemanticSearchEngine, self).load_configuration(configuration_file)
         
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
 
         self._number_of_topics = config.getint('RegistryConfigurations', 'number_of_topics')

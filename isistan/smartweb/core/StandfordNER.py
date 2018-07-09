@@ -1,5 +1,5 @@
 import ner
-from NamedEntityRecognizer import NamedEntityRecognizer
+from .NamedEntityRecognizer import NamedEntityRecognizer
 
 __author__ = 'ignacio'
 

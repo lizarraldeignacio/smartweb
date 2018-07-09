@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 
 from isistan.smartweb.preprocess.text import TfidfVectorizer
 from sklearn.decomposition import LatentDirichletAllocation
@@ -24,7 +24,7 @@ class LDASearchEngine(SmartSearchEngine):
 
     def load_configuration(self, configuration_file):
         super(LDASearchEngine, self).load_configuration(configuration_file)
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
         number_of_topics = config.getint('RegistryConfigurations', 'number_of_topics')
         self._lda = LatentDirichletAllocation(n_components=number_of_topics)

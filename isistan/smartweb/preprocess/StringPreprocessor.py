@@ -1,4 +1,4 @@
-from PorterPreprocessor import PorterPreprocessor
+from .PorterPreprocessor import PorterPreprocessor
 
 __author__ = 'ignacio'
 

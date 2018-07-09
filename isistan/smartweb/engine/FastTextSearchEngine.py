@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 from os.path import join
 
 from gensim import corpora, models, similarities
@@ -27,7 +27,7 @@ class FastTextSearchEngine(SmartSearchEngine):
     def load_configuration(self, configuration_file):
         super(FastTextSearchEngine, self).load_configuration(configuration_file)
         
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
 
         self._precomputed_vectors_path = config.get('RegistryConfigurations', 'precomputed_vectors_path')
@@ -40,13 +40,13 @@ class FastTextSearchEngine(SmartSearchEngine):
         return self._preprocessor(words)
 
     def _after_publish(self, documents):
-        print "Loading Model..."
+        print("Loading Model...")
         self._fasttext_model = models.FastText.load_fasttext_format(self._precomputed_vectors_path)
         self._fasttext_model.init_sims(replace=True)
-        print "[OK]"
+        print("[OK]")
         for document, service in zip(documents, self._service_array):
-            print service
-            self._service_map[service] = filter(lambda x: x in self._fasttext_model.vocab, document)
+            print(service)
+            self._service_map[service] = [x for x in document if x in self._fasttext_model.vocab]
 
     def publish(self, service):
         pass
@@ -55,9 +55,9 @@ class FastTextSearchEngine(SmartSearchEngine):
         transformer = StringTransformer()
         query = self._preprocessor(transformer.transform(query).get_words_list())
         # Filter words from the query that aren't in the vocabulary
-        query = list(filter(lambda x: x in self._fasttext_model.vocab, query))
+        query = list([x for x in query if x in self._fasttext_model.vocab])
         results = []
-        for key in self._service_map.keys():
+        for key in list(self._service_map.keys()):
             # Assign 0 similarty for empty documents, otherwise calculate similarity
             if self._service_map[key]:
               results.append((key, self._fasttext_model.n_similarity(query, self._service_map[key])))

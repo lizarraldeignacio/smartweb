@@ -1,5 +1,5 @@
 import abc
-import ConfigParser
+import configparser
 
 from os.path import join
 
@@ -20,11 +20,9 @@ from isistan.smartweb.core.StandfordNER import StandfordNER
 __author__ = 'ignacio'
 
 
-class SearchEngine(object):
+class SearchEngine(object, metaclass=abc.ABCMeta):
     #
     # Search engine abstract class
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def publish(self, service):
@@ -77,7 +75,7 @@ class SmartSearchEngine(SearchEngine):
                 return WSDLTransformer()
             elif self._use_wordnet:
                 return WSDLSimpleTransformer()
-        print 'Invalid document dataset'
+        print('Invalid document dataset')
         return None
 
     @abc.abstractmethod
@@ -98,7 +96,7 @@ class SmartSearchEngine(SearchEngine):
             else:
                 self._document_transformer.get_transformer1().fit(service_list)
         for document in service_list:
-            print 'Loading document ' + str(current_document) + ' of ' + str(len(service_list))
+            print(('Loading document ' + str(current_document) + ' of ' + str(len(service_list))))
             if self._load_corpus_from_file:
                 if self._document_expansion:
                     bag = WordBag().load_from_file(join(self._corpus_path, self._get_document_filename(document)))
@@ -118,7 +116,7 @@ class SmartSearchEngine(SearchEngine):
         self._after_publish(documents)
 
     def load_configuration(self, configuration_file):
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
 
         if config.get('RegistryConfigurations', 'load_corpus_from_file').lower() == 'true':

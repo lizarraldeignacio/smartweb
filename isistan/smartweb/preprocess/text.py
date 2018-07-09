@@ -11,7 +11,7 @@
 The :mod:`sklearn.feature_extraction.text` submodule gathers utilities to
 build feature vectors from text documents.
 """
-from __future__ import unicode_literals
+
 
 import array
 from collections import Mapping, defaultdict
@@ -129,9 +129,9 @@ class VectorizerMixin(object):
             original_tokens = tokens
             tokens = []
             n_original_tokens = len(original_tokens)
-            for n in xrange(min_n,
+            for n in range(min_n,
                             min(max_n + 1, n_original_tokens + 1)):
-                for i in xrange(n_original_tokens - n + 1):
+                for i in range(n_original_tokens - n + 1):
                     tokens.append(" ".join(original_tokens[i: i + n]))
 
         return tokens
@@ -144,8 +144,8 @@ class VectorizerMixin(object):
         text_len = len(text_document)
         ngrams = []
         min_n, max_n = self.ngram_range
-        for n in xrange(min_n, min(max_n + 1, text_len + 1)):
-            for i in xrange(text_len - n + 1):
+        for n in range(min_n, min(max_n + 1, text_len + 1)):
+            for i in range(text_len - n + 1):
                 ngrams.append(text_document[i: i + n])
         return ngrams
 
@@ -162,7 +162,7 @@ class VectorizerMixin(object):
         for w in text_document.split():
             w = ' ' + w + ' '
             w_len = len(w)
-            for n in xrange(min_n, max_n + 1):
+            for n in range(min_n, max_n + 1):
                 offset = 0
                 ngrams.append(w[offset:offset + n])
                 while offset + n < w_len:
@@ -252,7 +252,7 @@ class VectorizerMixin(object):
                 indices = set(six.itervalues(vocabulary))
                 if len(indices) != len(vocabulary):
                     raise ValueError("Vocabulary contains repeated indices.")
-                for i in xrange(len(vocabulary)):
+                for i in range(len(vocabulary)):
                     if i not in indices:
                         msg = ("Vocabulary of size %d doesn't contain index "
                                "%d." % (len(vocabulary), i))
@@ -481,7 +481,7 @@ def _add_sparse_column(sparse,column):
     import itertools
     addition = sp.lil_matrix(sparse.shape)
     sparse_coo = sparse.tocoo()
-    for i,j,v in itertools.izip(sparse_coo.row, sparse_coo.col, sparse_coo.data):
+    for i,j,v in zip(sparse_coo.row, sparse_coo.col, sparse_coo.data):
         addition[i,j] = v + column[i,0]
     return addition.tocsr()
 

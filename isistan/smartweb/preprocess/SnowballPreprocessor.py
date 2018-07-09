@@ -1,6 +1,6 @@
 from nltk.stem.snowball import SnowballStemmer
 from nltk.corpus import stopwords
-from Preprocessor import Preprocessor
+from .Preprocessor import Preprocessor
 
 __author__ = 'ignacio'
 

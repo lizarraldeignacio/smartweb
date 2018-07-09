@@ -1,4 +1,4 @@
-from StringPreprocessor import StringPreprocessor
+from .StringPreprocessor import StringPreprocessor
 
 __author__ = 'ignacio'
 

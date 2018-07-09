@@ -1,8 +1,8 @@
-import urllib
-import urllib2
-import httplib
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
+import http.client
 import json
-from InformationSource import InformationSource
+from .InformationSource import InformationSource
 from isistan.smartweb.preprocess.StringTransformer import StringTransformer
 from isistan.smartweb.util.HttpUtils import HttpUtils
 
@@ -27,13 +27,13 @@ class FreebaseInformationSource(InformationSource):
         n_retries = 0
         retry = True
         if query in self._cache:
-            print 'found information for query: ' + query
+            print('found information for query: ' + query)
             return self._cache[query]
         params = {
             'query': query,
             'key': self._api_key
         }
-        search_url = self._SEARCH_SERVICE_URL + '?' + urllib.urlencode(params)
+        search_url = self._SEARCH_SERVICE_URL + '?' + urllib.parse.urlencode(params)
         while retry and n_retries < self._NUMBER_OF_RETRIES:
             try:
                 retry = False
@@ -41,19 +41,19 @@ class FreebaseInformationSource(InformationSource):
                 if len(response['result']) > 0:
                     topic_id = response['result'][0]['mid']
                     if topic_id in self._cache:
-                        print 'found information for query: ' + query
+                        print('found information for query: ' + query)
                         return self._cache[topic_id]
                     params = {
                         'key': self._api_key,
                         'filter': 'suggest'
                     }
-                    topic_search_url = self._TOPIC_SERVICE_URL + topic_id + '?' + urllib.urlencode(params)
+                    topic_search_url = self._TOPIC_SERVICE_URL + topic_id + '?' + urllib.parse.urlencode(params)
                     topic = json.loads(HttpUtils.http_request(topic_search_url))
                     self._cache[query] = topic
                     self._cache[topic_id] = topic
                     return topic
-            except (urllib2.HTTPError, httplib.BadStatusLine, urllib2.URLError):
-                print 'retry'
+            except (urllib.error.HTTPError, http.client.BadStatusLine, urllib.error.URLError):
+                print('retry')
                 retry = True
                 n_retries += 1
 
@@ -65,17 +65,17 @@ class FreebaseInformationSource(InformationSource):
                 if '/common/document/text' in topic['property']['/common/topic/article']['values'][0]['property']:
                     sentences = topic['property']['/common/topic/article']['values'][0]['property']['/common/document/text']['values'][0]['value'].split('.')
                     if sentences is not None:
-                        print 'found information for query: ' + query
+                        print('found information for query: ' + query)
                         for i in range(0, min(len(sentences), self._NUMBER_OF_SENTENCES)):
                             transformer = StringTransformer()
                             additional_sentence = transformer.transform(sentences[i]).get_words_list()
                             additional_words.extend(additional_sentence)
                     else:
-                        print 'information not found for query: ' + query
+                        print('information not found for query: ' + query)
                 else:
-                    print 'information not found for query: ' + query
+                    print('information not found for query: ' + query)
             else:
-                print 'information not found for query: ' + query
+                print('information not found for query: ' + query)
         return additional_words
 
     def get_type(self, query):
@@ -85,16 +85,16 @@ class FreebaseInformationSource(InformationSource):
             if '/common/topic/notable_types' in topic['property']:
                 sentences = topic['property']['/common/topic/notable_types']['values'][0]['text']
                 if sentences is not None:
-                    print 'found parent type for query: ' + query
+                    print('found parent type for query: ' + query)
                     transformer = StringTransformer()
                     additional_sentence = transformer.transform(sentences).get_words_list()
                     additional_words.extend(additional_sentence)
                 else:
-                    print 'parent type not found for query: ' + query
+                    print('parent type not found for query: ' + query)
             else:
-                print 'parent type not found for query: ' + query
+                print('parent type not found for query: ' + query)
         else:
-            print 'parent type not found for query: ' + query
+            print('parent type not found for query: ' + query)
 
     def get_aka(self, query):
         additional_words = []
@@ -103,14 +103,14 @@ class FreebaseInformationSource(InformationSource):
             if '/common/topic/alias' in topic['property']:
                 sentences = topic['property']['/common/topic/alias']['values'][0]['text']
                 if sentences is not None:
-                    print 'found alias for query: ' + query
-                    print sentences
+                    print('found alias for query: ' + query)
+                    print(sentences)
                     transformer = StringTransformer()
                     additional_sentence = transformer.transform(sentences).get_words_list()
                     additional_words.extend(additional_sentence)
                 else:
-                    print 'alias not found for query: ' + query
+                    print('alias not found for query: ' + query)
             else:
-                print 'alias not found for query: ' + query
+                print('alias not found for query: ' + query)
         else:
-            print 'alias not found for query: ' + query
+            print('alias not found for query: ' + query)

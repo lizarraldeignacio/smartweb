@@ -1,4 +1,4 @@
-from ModelFactory import ModelFactory
+from .ModelFactory import ModelFactory
 from gensim.models import LsiModel
 
 __author__ = 'ignacio'

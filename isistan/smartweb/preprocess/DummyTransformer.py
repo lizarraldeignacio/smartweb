@@ -1,4 +1,4 @@
-from Transformer import Transformer
+from isistan.smartweb.preprocess.Transformer import Transformer
 
 __author__ = 'ignacio'
 

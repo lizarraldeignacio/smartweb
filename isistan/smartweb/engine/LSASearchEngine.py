@@ -1,4 +1,4 @@
-import ConfigParser
+import configparser
 
 from isistan.smartweb.preprocess.text import TfidfVectorizer
 from sklearn.decomposition import TruncatedSVD
@@ -24,7 +24,7 @@ class LSASearchEngine(SmartSearchEngine):
 
     def load_configuration(self, configuration_file):
         super(LSASearchEngine, self).load_configuration(configuration_file)
-        config = ConfigParser.ConfigParser()
+        config = configparser.ConfigParser()
         config.read(configuration_file)
         number_of_topics = config.getint('RegistryConfigurations', 'number_of_topics')
         self._metric = config.get('RegistryConfigurations', 'metric').lower()

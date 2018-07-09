@@ -1,5 +1,5 @@
 import re
-from Transformer import Transformer
+from .Transformer import Transformer
 from isistan.smartweb.persistence.WordBag import WordBag
 
 __author__ = 'ignacio'

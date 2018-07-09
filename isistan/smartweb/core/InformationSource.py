@@ -3,11 +3,9 @@ import abc
 __author__ = 'ignacio'
 
 
-class InformationSource(object):
+class InformationSource(object, metaclass=abc.ABCMeta):
     #
     # Information source abstract class
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def get_description(self, query):

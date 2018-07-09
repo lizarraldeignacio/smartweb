@@ -3,11 +3,9 @@ import abc
 __author__ = 'ignacio'
 
 
-class Transformer(object):
+class Transformer(object, metaclass=abc.ABCMeta):
     #
     # Transforms data
-
-    __metaclass__ = abc.ABCMeta
 
     @abc.abstractmethod
     def transform(self, data):

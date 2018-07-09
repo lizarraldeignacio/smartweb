@@ -1,5 +1,5 @@
 import xml.etree.ElementTree as ElementTree
-import urllib2
+import urllib.request, urllib.error, urllib.parse
 
 __author__ = 'ignacio'
 
@@ -37,7 +37,7 @@ class XMLReader(object):
 
     def load_from_url(self, url):
         """Load wsdl from url"""
-        wsdl = urllib2.urlopen(url)
+        wsdl = urllib.request.urlopen(url)
         self._xml_tree = ElementTree.parse(wsdl)
         self._xml_root = self._xml_tree.getroot()
 

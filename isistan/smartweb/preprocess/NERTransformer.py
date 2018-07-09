@@ -1,4 +1,4 @@
-from Transformer import Transformer
+from .Transformer import Transformer
 from isistan.smartweb.core.InformationSource import InformationSource
 from isistan.smartweb.core.NamedEntityRecognizer import NamedEntityRecognizer
 

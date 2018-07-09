@@ -1,5 +1,5 @@
-import urllib
-import urllib2
+import urllib.request, urllib.parse, urllib.error
+import urllib.request, urllib.error, urllib.parse
 
 from isistan.smartweb.core.SearchEngine import SearchEngine
 from isistan.smartweb.util.HttpUtils import HttpUtils
@@ -25,13 +25,15 @@ class SmartWebClient(SearchEngine):
             self.PUBLISH_SERVICES_PARAMETER : ' '.join(service_list),
         }
 
-        data = urllib.urlencode(values)
-        req = urllib2.Request(self._server_url + self._services_path, data)
-        print HttpUtils.http_request(req)
+        data = urllib.parse.urlencode(values).encode('utf-8')
+        req = urllib.request.Request(self._server_url + self._services_path, data=data)
+        print(HttpUtils.http_request(req))
 
     def find(self, query):
-        url = self._server_url + self._services_path +'/' + urllib.quote(query)
-        return HttpUtils.http_request(url).split(' ')
+        print(query)
+        url = self._server_url + self._services_path +'/' + urllib.parse.quote(query, encoding='utf-8')
+        req = HttpUtils.http_request(url)
+        return req.decode('utf-8').split(' ')
 
     def publish(self, service):
         pass

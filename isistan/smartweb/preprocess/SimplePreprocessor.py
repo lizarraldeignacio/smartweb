@@ -1,4 +1,4 @@
-from Preprocessor import Preprocessor
+from .Preprocessor import Preprocessor
 
 from nltk.corpus import stopwords
 

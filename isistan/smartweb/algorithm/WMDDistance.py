@@ -1,5 +1,5 @@
 
-from __future__ import print_function
+
 
 import numpy as np
 import tensorflow as tf
@@ -25,8 +25,8 @@ class WMDDistance(object):
         if distance_matrix is None:
             # Compute distance matrix.
             self._distance_matrix = np.zeros((vocab_len, vocab_len), dtype=np.double)
-            for i, t1 in dictionary.items():
-                for j, t2 in dictionary.items():
+            for i, t1 in list(dictionary.items()):
+                for j, t2 in list(dictionary.items()):
                     # Compute Euclidean distance between word vectors.
                     self._distance_matrix[i, j] = np.sqrt(np.sum((embeddings_model[t1] - embeddings_model[t2])**2))
         else:
