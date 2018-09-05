@@ -10,6 +10,7 @@ from keras import backend as K
 
 
 from isistan.smartweb.algorithm.VAE import VAE
+#from isistan.smartweb.algorithm.VAEWasserstein import VAEWasserstein
 from isistan.smartweb.core.SearchEngine import SmartSearchEngine
 from isistan.smartweb.preprocess.StringPreprocessor import StringPreprocessor
 from isistan.smartweb.preprocess.StringPreprocessorAdapter import StringPreprocessorAdapter
@@ -71,7 +72,7 @@ class MLearningSearchEngine(SmartSearchEngine):
 
             X = self._vectorizer.fit_transform(documents)
             pickle.dump(self._vectorizer, open('vectorizer.pkl', 'wb'))
-            X_train, X_test, _, _ = train_test_split(X, np.zeros(X.shape), test_size=0.33, random_state=23)
+            X_train, X_test, _, _ = train_test_split(X, np.zeros(X.shape), test_size=0.01, random_state=23)
             self._model.train(X_train, X_test, cos_distance)
             self._model.save('vae.h5')
         else:
