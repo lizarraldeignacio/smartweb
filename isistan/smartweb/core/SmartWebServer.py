@@ -41,7 +41,7 @@ def run():
     engine = getattr(module, args.engine)()
     engine.load_configuration(args.conf)
     
-    app.run(port =  args.port, debug = True)
+    app.run(port =  args.port, debug = False)
 
 if __name__ == '__main__':
     run()
