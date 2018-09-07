@@ -1040,9 +1040,8 @@ class TfidfTransformer(BaseEstimator, TransformerMixin):
                 idf = np.log(float(n_samples) / df) + 1.0
                 self._idf_diag = sp.spdiags(idf,
                                             diags=0, m=n_features, n=n_features)
-       
 
-    	return self
+        return self
 
     def transform(self, X, copy=True):
         """Transform a count matrix to a tf or tf-idf representation
