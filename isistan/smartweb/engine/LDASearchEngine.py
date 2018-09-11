@@ -27,7 +27,7 @@ class LDASearchEngine(SmartSearchEngine):
         config = configparser.ConfigParser()
         config.read(configuration_file)
         number_of_topics = config.getint('RegistryConfigurations', 'number_of_topics')
-        self._lda = LatentDirichletAllocation(n_components=number_of_topics)
+        self._lda = LatentDirichletAllocation(n_components=number_of_topics, learning_method='batch', random_state=23)
         self._metric = config.get('RegistryConfigurations', 'metric').lower()
         self._vectorizer = TfidfVectorizer(sublinear_tf=False,
                                            analyzer='word', lowercase=False, use_bm25idf=self._use_bm25idf,
