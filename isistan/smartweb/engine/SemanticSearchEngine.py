@@ -47,7 +47,6 @@ class SemanticSearchEngine(SmartSearchEngine):
         else:
             self._tfidf_model = models.TfidfModel.load('vectorizer-semantic.pkl')
             self._index = similarities.MatrixSimilarity.load('semantic-similarity-mat.pkl')
-            self._model.load('vae.h5')
             if algorithm == 'LDA':
                 self._model = LDAModelFactory().load('semantic-model.pkl')
             elif algorithm == 'LSA':
@@ -73,6 +72,8 @@ class SemanticSearchEngine(SmartSearchEngine):
             self._index.save('semantic-similarity-mat.pkl')
             self._tfidf_model.save('vectorizer-semantic.pkl')
             self._model.save('semantic-model.pkl')
+        else:
+            self._dictionary = corpora.Dictionary(documents)
 
     def publish(self, service):
         pass
